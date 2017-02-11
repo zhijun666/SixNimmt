@@ -12,7 +12,7 @@ class AI:
     def InfoSetup(self, setupData):
         pass
     def InfoNewGame(self, newGamedata):
-        self.cards = newGamedata[:]
+        self.cards = newGamedata[:] # deep copy
         pass
     def InfoGame(self, gameData):
         pass
