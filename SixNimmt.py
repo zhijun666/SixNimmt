@@ -13,7 +13,10 @@ class AiHandler:
         self.procs = {}
     def AddAi(self, name, path):
         if os.path.exists(path):
-            p = Popen(['python', path], stdin=PIPE, stdout=PIPE, bufsize=0)
+            if path.endswith(".py") or path.endswith(".pyc"):
+                p = Popen(['python', path], stdin=PIPE, stdout=PIPE, bufsize=0)
+            else:
+                p = Popen([path], stdin=PIPE, stdout=PIPE, bufsize=0)
             self.procs[name] = p
         else:
             raise Exception("there's no path" + path)
