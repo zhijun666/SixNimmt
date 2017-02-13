@@ -1,0 +1,12 @@
+[
+    {
+        "name":"exampleai",
+        "path":"./ai/example/exampleai.py",
+        "code":"python"
+    },
+    {
+        "name":"exampleaicpp",
+        "path":"./ai/example_cpp/exampleaicpp",
+        "code":"cpp"
+    }
+]

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import logging
 import random
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 import os
 import argparse
 import re
 import sys
 import itertools
+import json
 
 class AiHandler:
     def __init__(self):
@@ -19,8 +20,9 @@ class AiHandler:
                 p = Popen([path], stdin=PIPE, stdout=PIPE, bufsize=0)
             self.procs[name] = p
         else:
-            raise Exception("there's no path" + path)
-        print "Added AI", name, path
+            call("make", cwd=os.path.dirname(path))
+            if not os.path.exists(path):
+                raise Exception("there's no path" + path)
     def Send(self, s, player = None):
         if player == None:
             for p in self.procs.values():
@@ -85,7 +87,9 @@ class SixNimmtGame:
         self.rows = [[],[],[],[]]
         self.players = {}
         self.aiHandler = AiHandler()
-        self.broadCast = True
+        self.broadCast = 0
+        with open("playerlist.json") as f:
+            self.playerList = json.load(f)
         for key, val in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, val)
@@ -95,9 +99,18 @@ class SixNimmtGame:
     def AddPlayer(self, path):
         '''
         Add a player in the game
-          * path: the path to the AI
+          * path: the path to the AI, could be an alias
         '''
-        playerName = path.split('/')[-1].split('.')[0]
+        if os.path.exists(path):
+            playerName = path.split('/')[-1].split('.')[0]
+        else:
+            playerName = path
+            for p in self.playerList:
+                if p["name"] == path:
+                    path = p["path"]
+                    break
+            else:
+                raise Exception("No alias or path {} exists!".format(path))
         if playerName in self.players:
             suffix = 2
             newPlayerName = playerName + str(suffix)
@@ -244,7 +257,8 @@ class SixNimmtGame:
             finalScore[p] = self.players[p].score
         self.aiHandler.Info('GAMEEND', finalScore)
         self.BroadCast('The game ends!')
-        self.BroadCast('Final score: {}'.format(finalScore))
+        self.BroadCast('Final score:')
+        self.BroadCast('{}'.format(finalScore), 8)
         self.BroadCast('Winner is {}'.format(p))
 
     '''
@@ -265,8 +279,8 @@ class SixNimmtGame:
                 score += 1
         return score
 
-    def BroadCast(self, s):
-        if self.broadCast:
+    def BroadCast(self, s, level = 5):
+        if level >= self.broadCast:
             print s
     def PrintData(self):
         print "Current Row:"
@@ -280,13 +294,19 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--score', type=int, default=100, help='the score where the game ends')
     parser.add_argument('--seed', type=int, default=None, help='set random seed to reproduce the game')
-    parser.add_argument('-q', '--quiet', action='store_true', help='do not print any info from the game')
+    parser.add_argument('-q', '--quiet', action='store_true', help='do not print any detailed info from the game')
+    parser.add_argument('--mute', action='store_true', help='do not print any info from the game')
     parser.add_argument('--official', action='store_true', help='use official mode, same cards will be sent to players')
     parser.add_argument('-r', type=int, default = 1, help='only works in official mode, how many rounds you want to run')
     parser.add_argument('aiPaths', nargs='+', help='paths to ai')
     options = parser.parse_args()
     random.seed(options.seed)
-    game = SixNimmtGame(broadCast = not options.quiet)
+    game = SixNimmtGame()
+    if options.quiet:
+        game.broadCast = 7
+    elif options.mute:
+        game.broadCast = 10
+    # Add players
     for path in options.aiPaths:
         m = re.search('^([0-9]*)\*(.*)', path)
         if m != None:
