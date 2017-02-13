@@ -33,7 +33,7 @@ class AiHandler:
         line = self.procs[player].stdout.readline()
         return line
     def Info(self, subHeader, data, player = None):
-        msg = 'INFO|' + subHeader + '|' + str(data)
+        msg = 'INFO|' + subHeader + '|' + json.dumps(data)
         self.Send(msg, player)
     def Cmd(self, subHeader, player = None):
         msg = 'CMD|' + subHeader
@@ -88,7 +88,7 @@ class SixNimmtGame:
         self.players = {}
         self.aiHandler = AiHandler()
         self.broadCast = 0
-        with open("playerlist.json") as f:
+        with open(os.path.join(os.path.dirname(__file__), "playerlist.json")) as f:
             self.playerList = json.load(f)
         for key, val in kwargs.items():
             if hasattr(self, key):
@@ -107,7 +107,7 @@ class SixNimmtGame:
             playerName = path
             for p in self.playerList:
                 if p["name"] == path:
-                    path = p["path"]
+                    path = os.path.join(os.path.dirname(__file__),p["path"])
                     break
             else:
                 raise Exception("No alias or path {} exists!".format(path))
@@ -131,9 +131,10 @@ class SixNimmtGame:
             data["playerNum"] = self.playerNum
             self.aiHandler.Info('SETUP', data, name)
 
-    def OfficialGame(self, rounds):
+    def OfficialGame(self, rounds = None, score = None):
         self.Setup()
-        for r in range(rounds):
+        r = 0
+        while True:
             self.deck = list(range(1,105))
             random.shuffle(self.deck)
             roundRows = [self.deck.pop() for i in range(4)]
@@ -151,6 +152,15 @@ class SixNimmtGame:
                     idx += 1
                 for i in range(10):
                     self.NewRound()
+            if rounds != None and rounds != 0:
+                r += 1
+                if r >= rounds:
+                    break
+            elif score != None:
+                if any([p.score > score for p in self.players.values()]):
+                    break
+            else:
+                break
         self.SendGameEndInfo()
             
     def StartTour(self, score):
@@ -258,8 +268,8 @@ class SixNimmtGame:
         self.aiHandler.Info('GAMEEND', finalScore)
         self.BroadCast('The game ends!')
         self.BroadCast('Final score:')
-        self.BroadCast('{}'.format(finalScore), 8)
-        self.BroadCast('Winner is {}'.format(p))
+        self.BroadCast('{}'.format(json.dumps(finalScore)), 8)
+        self.BroadCast('Winner is {}'.format(winner))
 
     '''
     Utilities 
@@ -297,7 +307,7 @@ if __name__ == '__main__':
     parser.add_argument('-q', '--quiet', action='store_true', help='do not print any detailed info from the game')
     parser.add_argument('--mute', action='store_true', help='do not print any info from the game')
     parser.add_argument('--official', action='store_true', help='use official mode, same cards will be sent to players')
-    parser.add_argument('-r', type=int, default = 1, help='only works in official mode, how many rounds you want to run')
+    parser.add_argument('-r', type=int, default = 0, help='only works in official mode, how many rounds you want to run')
     parser.add_argument('aiPaths', nargs='+', help='paths to ai')
     options = parser.parse_args()
     random.seed(options.seed)
@@ -318,6 +328,6 @@ if __name__ == '__main__':
         print 'You need 2 to 10 AIs to start the game'
         sys.exit(1)
     if options.official:
-        game.OfficialGame(int(options.r))
+        game.OfficialGame(rounds = int(options.r), score = int(options.score))
     else:
         game.StartTour(options.score)
