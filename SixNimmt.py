@@ -23,6 +23,9 @@ class AiHandler:
             call("make", cwd=os.path.dirname(path))
             if not os.path.exists(path):
                 raise Exception("there's no path" + path)
+            else:
+                p = Popen([path], stdin=PIPE, stdout=PIPE, bufsize=0)
+                self.procs[name] = p
     def Send(self, s, player = None):
         if player == None:
             for p in self.procs.values():
