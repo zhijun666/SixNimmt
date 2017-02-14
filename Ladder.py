@@ -3,6 +3,7 @@ import json
 import os
 import random
 import time
+import sys
 
 class Ladder:
     def __init__(self):
@@ -73,5 +74,9 @@ class Ladder:
 
 if __name__ == "__main__":
     ladder = Ladder()
-    ladder.Start()
+    if len(sys.argv) == 2:
+        rounds = int(sys.argv[1])
+    else:
+        rounds = 10
+    ladder.Start(rounds)
 
