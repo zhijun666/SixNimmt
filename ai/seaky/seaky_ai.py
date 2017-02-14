@@ -9,24 +9,33 @@ class AI:
         self.cards = []
         self.logFileName = os.path.join(os.path.dirname(__file__), 'log')
         logging.basicConfig(filename = self.logFileName, level=logging.INFO)
+
     def InfoSetup(self, setupData):
         pass
+
     def InfoNewGame(self, newGamedata):
         self.cards = newGamedata[:]
         pass
+
     def InfoGame(self, gameData):
         pass
+
     def InfoMove(self, cardData):
         pass
+
     def InfoScore(self, scoreData):
         pass
+
     def InfoGameEnd(self, gameEndData):
         pass
+
     def CmdPickCard(self):
         random.shuffle(self.cards)
         return self.cards.pop()
+
     def CmdPickRow(self):
         return random.randint(0,3)
+
     def ProcessInfo(self):
         line = sys.stdin.readline()
         if line == '':
@@ -54,10 +63,12 @@ class AI:
             elif data[1] == 'PICKROW':
                 self.Send(self.CmdPickRow())
         return True
+
     def Send(self, data):
         logging.info('Send Info ' + str(data))
         print str(data)
         sys.stdout.flush()
+
     def Start(self):
         while True:
             if not self.ProcessInfo():

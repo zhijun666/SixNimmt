@@ -15,7 +15,7 @@ class AI:
         self.cards = newGamedata[:]
         pass
     def InfoGame(self, gameData):
-        pass
+        pass     
     def InfoMove(self, cardData):
         pass
     def InfoScore(self, scoreData):
@@ -23,10 +23,19 @@ class AI:
     def InfoGameEnd(self, gameEndData):
         pass
     def CmdPickCard(self):
-        random.shuffle(self.cards)
+        random.sort(self.cards)
         return self.cards.pop()
     def CmdPickRow(self):
-        return random.randint(0,3)
+        """rows = self.InfoGame().rows
+        length = len(rows[0])
+        index = 0
+        for row in rows:
+            if len(row) < length:
+                length = len(row)
+                index = rows.index(row)
+        return index"""
+        random.shuffle(self.cards)
+        return self.cards.pop()        
     def ProcessInfo(self):
         line = sys.stdin.readline()
         if line == '':

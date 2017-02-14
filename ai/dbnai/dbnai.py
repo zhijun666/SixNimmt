@@ -8,7 +8,7 @@ class AI:
         self.name = ''
         self.cards = []
         self.logFileName = os.path.join(os.path.dirname(__file__), 'log')
-        logging.basicConfig(filename = self.logFileName, level=logging.INFO)
+        logging.basicConfig(filename = self.logFileName, level=logging.INFO) #For debug 
     def InfoSetup(self, setupData):
         pass
     def InfoNewGame(self, newGamedata):
@@ -24,6 +24,7 @@ class AI:
         pass
     def CmdPickCard(self):
         random.shuffle(self.cards)
+        self.cards = sorted(self.cards, reverse = True)
         return self.cards.pop()
     def CmdPickRow(self):
         return random.randint(0,3)
@@ -32,11 +33,11 @@ class AI:
         if line == '':
             logging.info('No Input')
             sys.exit(1)
-        data = line.strip().split('|')
+        data = line.strip().split('|') #delete space
         logging.info("Get Info " + str(line))
         if data[0] == 'INFO':
             if data[1] == 'SETUP':
-                self.InfoSetup(eval(data[2]))
+                self.InfoSetup(eval(data[2])) #eval
             elif data[1] == 'NEWGAME':
                 self.InfoNewGame(eval(data[2]))
             elif data[1] == 'GAME':

@@ -23,9 +23,13 @@ class AI:
     def InfoGameEnd(self, gameEndData):
         pass
     def CmdPickCard(self):
-        random.shuffle(self.cards)
-        return self.cards.pop()
+        self.cards.sort()
+        if len(self.cards) % 2:
+            return self.cards[len(self.cards)/2+1]
+        else:
+            return self.cards[(len(self.cards)+1)/2]
     def CmdPickRow(self):
+
         return random.randint(0,3)
     def ProcessInfo(self):
         line = sys.stdin.readline()
