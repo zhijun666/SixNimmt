@@ -63,5 +63,15 @@
         "name":"yuai",
         "path":"./ai/YuAi/yuai.py",
         "code":"python"
+    },
+    {
+        "name":"gaotian",
+        "path":"./ai/gaotian/GTNimmt.py",
+        "code":"python"
+    },
+    {
+        "name":"gaotian_test",
+        "path":"./ai/gaotian_test/GTNimmt.py",
+        "code":"python"
     }
 ]
