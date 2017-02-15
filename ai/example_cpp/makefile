@@ -1,4 +1,4 @@
-srcFiles=exampleai.cpp jsoncpp.o ../../libs/json/json.h ../../libs/json/json-forwards.h
+srcFiles=exampleai.cpp jsoncpp.o
 exampleaicpp : $(srcFiles)
 	g++ -o exampleaicpp -I../../libs -std=c++11 $(srcFiles) 
 jsoncpp.o : ../../libs/jsoncpp.cpp
