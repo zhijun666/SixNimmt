@@ -15,6 +15,7 @@ class AI:
         self.cards = newGamedata[:]
         pass
     def InfoGame(self, gameData):
+        self.infoGame = gameData
         pass
     def InfoMove(self, cardData):
         pass
@@ -26,7 +27,24 @@ class AI:
         random.shuffle(self.cards)
         return self.cards.pop()
     def CmdPickRow(self):
-        return random.randint(0,3)
+        data = self.infoGame["rows"]
+        sum1 = []
+        for i in range(4):
+            rowdata = data[i]
+            rowsum = 0
+            for i in rowdata:
+                if i==55:
+                    rowsum+=7
+                elif i % 11 == 0:
+                    rowsum+=5
+                elif i % 10 == 0:
+                    rowsum+= 3
+                elif i % 5 ==0:
+                    rowsum += 2
+                else:
+                    rowsum+=1
+            sum1.append(rowsum)
+        return sum1.index(min(sum1))
     def ProcessInfo(self):
         line = sys.stdin.readline()
         if line == '':
