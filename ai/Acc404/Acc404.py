@@ -24,26 +24,50 @@ class AI:
     def InfoGameEnd(self, gameEndData):
         pass
     def CmdPickCard(self):
-        random.shuffle(self.cards)
-        return self.cards.pop()
-    def CmdPickRow(self):
+        self.cards.sort()
+        cardc = self.cards[:]
         data = self.infoGame["rows"]
+        sum1 = self.Xscore(data)
+        tail = []
+        lens = []
+        prob = []
+        for i in range(4):
+            tail.append(data[i][-1])
+            lens.append(len(data[i]))
+        tailsort = tail[:]
+        tailsort.sort()
+        for j in self.cards:
+            prob.append(0)
+        for k in range(len(cardc)):
+            if cardc[k] < tailsort[0]:
+                prob[k] -= 5
+            for a in range(4):
+                if cardc[k] < tailsort[a]:
+                    prob[k] -= 2*len(data[tail.index(tailsort[a])])
+                    prob[k] -= 3*sum1[tail.index(tailsort[a])] 
+            
+        return self.cards.pop(prob.index(max(prob)))
+    def Xscore(self,data):
         sum1 = []
         for i in range(4):
             rowdata = data[i]
             rowsum = 0
             for i in rowdata:
-                if i==55:
-                    rowsum+=7
-                elif i % 11 == 0:
-                    rowsum+=5
-                elif i % 10 == 0:
-                    rowsum+= 3
-                elif i % 5 ==0:
+                if i == 55:
+                    rowsum +=7
+                elif i%11 == 0:
+                    rowsum += 5
+                elif i%10 == 0:
+                    rowsum += 3
+                elif i%5 == 0:
                     rowsum += 2
                 else:
-                    rowsum+=1
+                    rowsum += 1
             sum1.append(rowsum)
+        return sum1
+    def CmdPickRow(self):
+        data = self.infoGame["rows"]
+        sum1 = self.Xscore(data)
         return sum1.index(min(sum1))
     def ProcessInfo(self):
         line = sys.stdin.readline()
