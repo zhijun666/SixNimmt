@@ -1,21 +1,33 @@
 #!/usr/bin/env python
+from AiBrain import *
 import sys
 import random
 import logging
 import os
-class AI:
+class AI: 
     def __init__(self):
         self.name = ''
         self.cards = []
+        self.rows = []
         self.logFileName = os.path.join(os.path.dirname(__file__), 'log')
         logging.basicConfig(filename = self.logFileName, level=logging.INFO) #For debug 
+    """   
+    def GetDangerRows(self):
+        danRowsIndex = [ i for i, row in enumerate(self.rows) if len(row) == 5 ]
+        return danRowsIndex
+    """
+    
     def InfoSetup(self, setupData):
         pass
     def InfoNewGame(self, newGamedata):
         self.cards = newGamedata[:]
         pass
     def InfoGame(self, gameData):
+        #logging.info("The gameData" + str(gameData["rows"]))
+        #self.brain.GetRowsInfo(gameData['rows']) 
+        self.rows = gameData['rows']
         pass
+
     def InfoMove(self, cardData):
         pass
     def InfoScore(self, scoreData):
@@ -24,10 +36,21 @@ class AI:
         pass
     def CmdPickCard(self):
         random.shuffle(self.cards)
-        self.cards = sorted(self.cards, reverse = True)
-        return self.cards.pop()
+        brain = Brain()
+        brain.GetRowsInfo(self.rows + [])
+        brain.GetCardsInfo(self.cards + [])
+        """
+        self.brain.GetCardsInfo(self.cards)
+        logging.info("cards " + str(self.cards))
+        logging.info("Index is Lsec--------------- " + str(self.brain.LargerSecondMin()))
+        logging.info("Index is LMin--------------- " + str(self.brain.LargerMinimum()))
+        card_index = self.brain.LargerSecondMin()
+        logging.info("Index is PICK--------------- " + str(card_index))
+        """
+        return self.cards.pop(brain.AnalyzeCardChoice())
+        
     def CmdPickRow(self):
-        return random.randint(0,3)
+        return Brain().ChooseRow(self.rows) 
     def ProcessInfo(self):
         line = sys.stdin.readline()
         if line == '':
