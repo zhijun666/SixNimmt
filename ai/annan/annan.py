@@ -24,10 +24,10 @@ class AI:
         pass
     def CmdPickCard(self):
         self.cards.sort()
-        if len(self.cards) % 2:
-            return self.cards[len(self.cards)/2+1]
+        if len(self.cards) % 2 == 0:
+            return self.cards.pop(len(self.cards)/2)
         else:
-            return self.cards[(len(self.cards)+1)/2]
+            return self.cards.pop((len(self.cards)+1)/2-1)
     def CmdPickRow(self):
 
         return random.randint(0,3)
