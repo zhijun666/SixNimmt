@@ -36,17 +36,23 @@ class AI:
             lens.append(len(data[i]))
         tailsort = tail[:]
         tailsort.sort()
+        tailsort.append(1000000)
+        flag = True
         for j in self.cards:
-            prob.append(0)
+            prob.append(2)
         for k in range(len(cardc)):
             if cardc[k] < tailsort[0]:
-                prob[k] -= 5
-            for a in range(4):
-                if cardc[k] < tailsort[a]:
-                    prob[k] -= 2*len(data[tail.index(tailsort[a])])
-                    prob[k] -= 3*sum1[tail.index(tailsort[a])] 
+                prob[k] *= 20
+            else:
+                for a in range(4):
+                    if cardc[k] < tailsort[a+1] and flag:
+                        prob[k] *= (len(data[tail.index(tailsort[a])]))
+                        prob[k] *= (sum1[tail.index(tailsort[a])] )
+                        flag = False
             
-        return self.cards.pop(prob.index(max(prob)))
+                
+        return self.cards.pop(prob.index(min(prob)))
+
     def Xscore(self,data):
         sum1 = []
         for i in range(4):
